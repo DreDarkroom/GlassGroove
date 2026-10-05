@@ -84,13 +84,14 @@ export function buildNav(app) {
   });
   addEventListener('pagehide', () => { if (A.ready) saveLoop(S, A); });
 
-  /* a silent looping sound: it makes the phone treat this page as a music player (a notification, lock-screen buttons, kinder to the page when it is in the background) */
+  /* a silent looping sound, ten seconds long (Chrome ignores media shorter than about five seconds when deciding whether to show a notification): it makes the phone treat this page as a music player (a notification, lock-screen buttons, kinder to the page when it is in the background) */
   const silence = (() => {
-    const rate = 8000, n = rate, buf = new Uint8Array(44 + n), v = new DataView(buf.buffer), w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+    const rate = 8000, n = rate * 10, buf = new Uint8Array(44 + n), v = new DataView(buf.buffer), w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
     w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true); v.setUint32(28, rate, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36, 'data'); v.setUint32(40, n, true);
     buf.fill(128, 44);
     return new Blob([buf], { type: 'audio/wav' });
   })();
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (err) { /* Safari 16.4+: say this page is a music player, so the silent switch and the lock screen treat it like one */ }
   const keep = new Audio(URL.createObjectURL(silence));
   keep.loop = true; keep.setAttribute('playsinline', ''); keep.volume = 0.01;
 

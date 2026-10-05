@@ -1,6 +1,6 @@
 /* Glass Groove: the few settings a person might change. One place, so a rename is one edit. */
 export const CONFIG = {
-  version: '0.2.0',
+  version: '0.2.1',
   name: 'Glass Groove',
   slug: 'wipelight',                                       // stays 'wipelight': it is the storage and database prefix, and changing it would strand people's saved beats and takes
   repoUrl: 'https://github.com/DreDarkroom/GlassGroove',
