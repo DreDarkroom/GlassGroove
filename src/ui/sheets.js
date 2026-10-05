@@ -9,7 +9,7 @@ export function buildSheets(app) {
   const refresh = {};                                              // each tab says how to repaint itself when it is opened
   app.onTab = refresh;
 
-  for (const b of $$('button', dock)) { b.querySelector('.i').append(icon(b.dataset.tab)); b.setAttribute('aria-selected', 'false'); b.setAttribute('aria-controls', 'sheet'); }
+  for (const b of $$('button', dock)) { b.querySelector('.i').append(icon(b.dataset.tab)); b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-controls', 'sheet'); }
 
   function setHeight() { document.documentElement.style.setProperty('--sheet-h', sheet.hidden ? '0px' : `${sheet.offsetHeight}px`); }
   new ResizeObserver(setHeight).observe(sheet);
@@ -21,7 +21,7 @@ export function buildSheets(app) {
     sheet.hidden = false;
     if (fresh) app.nav.push('sheet', close);
     for (const t of TABS) $(`#pane-${t}`).hidden = t !== name;
-    for (const b of $$('button', dock)) b.setAttribute('aria-selected', String(b.dataset.tab === name));
+    for (const b of $$('button', dock)) b.setAttribute('aria-pressed', String(b.dataset.tab === name));
     if (refresh[name]) refresh[name]();
     sheet.scrollTop = 0;
     setHeight();
@@ -31,7 +31,7 @@ export function buildSheets(app) {
     current = null;
     app.nav.release('sheet');
     sheet.hidden = true;
-    for (const b of $$('button', dock)) b.setAttribute('aria-selected', 'false');
+    for (const b of $$('button', dock)) b.setAttribute('aria-pressed', 'false');
     setHeight();
   }
 

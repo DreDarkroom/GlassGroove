@@ -330,13 +330,20 @@ export function createSeq(A, { emit = (...a) => timed.push(...a) } = {}) {
   function pump() {
     const now = A.now();
     if (nextTime < now - 0.25) {                              // the page stalled (a busy frame, a call, the phone sleeping): skip what was missed, so it does not all play at once
-      const skip = Math.ceil((now + 0.05 - nextTime) / stepDur());
+      const skip = Math.ceil((now + 0.05 - nextTime) / stepDur()), from = tick;
       nextTime += skip * stepDur(); tick += skip;
       S.stalls = (S.stalls || 0) + 1;
+      for (let b = Math.ceil((from + 1) / 16) * 16; b < tick && b < from + 16 * 64; b += 16) { S.cycle++; if (S.onBar) S.onBar(S.cycle, nextTime); }   // bars that went by still count (Autopilot, the bar counter)
+      if (S.dropAt && S.dropAt.tick < tick) {                 // a drop that fell inside the gap lands on the next bar line (a surge) or beat, never on an odd sixteenth
+        const m = S.dropAt.surge ? 16 : 4;
+        S.dropAt.tick = Math.ceil(tick / m) * m;
+        if (S.dropAt.surge) S.surgeTick = S.dropAt.tick;
+      }
     }
     while (nextTime < now + A.lookahead) { play(tick, nextTime); nextTime += stepDur(); tick++; }
   }
 
+  S._pump = pump;                                            // the clock calls it; tests call it by hand
   S.tickOnce = play;                                         // tests and the benchmark drive the sequencer by hand
   S.start = () => {
     if (S.playing) return;

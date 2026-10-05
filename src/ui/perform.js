@@ -46,7 +46,7 @@ export function buildPerform(app) {
     S.start();
     paintPause();
     app.updateWake && app.updateWake();
-    if (!app.store.get('seenHints')) { setTimeout(() => hint('Drag across the picture to wipe the fog.'), 900); setTimeout(() => hint('Hold Rise, then let go to drop.', 5000), 5600); setTimeout(() => hint('Tap the picture twice with two fingers for a Surge.', 5000), 11200); app.store.set('seenHints', true); }
+    if (!app.store.get('seenHints')) { setTimeout(() => hint('Drag across the picture to wipe the fog.'), 900); setTimeout(() => hint('Hold Rise, then let go to drop.', 5000), 5600); setTimeout(() => hint('For a Surge: open Play and press Start a surge, or tap the picture twice with two fingers.', 6000), 11200); app.store.set('seenHints', true); }
   }
   function togglePlay() {
     if (!A.ready || PB.perf) return;

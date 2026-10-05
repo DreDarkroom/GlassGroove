@@ -26,3 +26,19 @@ export function paintRange(input) {
   const lo = +input.min || 0, hi = +input.max || 1;
   input.style.setProperty('--fill', `${((+input.value - lo) / (hi - lo)) * 100}%`);
 }
+
+/** Make a dialog behave: it is marked modal, Tab stays inside it, and closing it puts focus back where it was. Call the function it returns when the dialog closes. */
+export function modal(box) {
+  const opener = document.activeElement;
+  box.setAttribute('aria-modal', 'true');
+  const onKey = (e) => {
+    if (e.key !== 'Tab') return;
+    const f = [...box.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')].filter((x) => !x.disabled && x.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
+  box.addEventListener('keydown', onKey);
+  return () => { box.removeEventListener('keydown', onKey); if (opener && opener.focus && document.contains(opener)) opener.focus({ preventScroll: true }); };
+}

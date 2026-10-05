@@ -11,7 +11,7 @@ import { CONFIG } from '../config.js';
 import { timed } from '../events.js';
 import { makeClock } from '../engine/clock.js';
 import { saveLoop } from '../engine/loopfile.js';
-import { toast } from './dom.js';
+import { toast, modal } from './dom.js';
 
 export function buildNav(app) {
   const { A, S, R, PB } = app;
@@ -26,15 +26,16 @@ export function buildNav(app) {
   /** Register something that is now open; Back will close it (by calling `close`). */
   nav.push = (name, close) => {
     if (stack.some((l) => l.name === name)) return;
-    try { history.pushState({ gg: 'app', d: depth() + 1 }, ''); } catch (err) { /* see above */ }
-    stack.push({ name, close, d: depth() });
+    let hist = true;
+    try { history.pushState({ gg: 'app', d: depth() + 1 }, ''); } catch (err) { hist = false; }    // if the browser refuses, the layer works but Back will not close it
+    stack.push({ name, close, d: hist ? depth() : Infinity, hist });
   };
   /** It was closed some other way (a button): take it off the stack and its history step with it, if it was the innermost. */
   nav.release = (name) => {
     const i = stack.findIndex((l) => l.name === name);
     if (i < 0) return;
     const [l] = stack.splice(i, 1);
-    if (i === stack.length && depth() === l.d) { skip++; try { history.back(); } catch (err) { skip--; } }
+    if (l.hist && i === stack.length && depth() === l.d) { skip++; try { history.back(); } catch (err) { skip--; } }
   };
   nav.open = (name) => stack.some((l) => l.name === name);
 
@@ -43,7 +44,7 @@ export function buildNav(app) {
     const s = history.state || {};
     if (s.gg === 'root') return askLeave();
     const d = s.d || 1;
-    while (stack.length && stack[stack.length - 1].d > d) stack.pop().close();
+    while (stack.length && stack[stack.length - 1].hist && stack[stack.length - 1].d > d) stack.pop().close();
   });
 
   function askLeave() {
@@ -60,9 +61,10 @@ export function buildNav(app) {
       h('p', { class: 'fine', text: `The music is paused and your beat is saved on this phone.${R.state.active ? ' A recording is still running and will be lost if you leave.' : ''}` }),
       h('div', { class: 'row', style: 'gap:10px;margin-top:12px' }, stay, go));
     document.body.append(box);
+    const releaseModal = modal(box);
     stay.focus();
     function done(keep) {
-      box.remove(); asking = false;
+      box.remove(); asking = false; releaseModal();
       if (keep) { try { history.pushState({ gg: 'app', d: 1 }, ''); } catch (err) { /* see above */ } if (wasPlaying) app.togglePlay(); }
       else { leaving = true; history.back(); setTimeout(() => { try { window.close(); } catch (err) { /* a tab we did not open stays open */ } }, 250); }
     }

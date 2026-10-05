@@ -1,7 +1,7 @@
 # Glass Groove
 
 Wipe the fog off a glowing picture and make music with your thumbs. A bass, three drummers and a picture that reacts to everything you touch,
-built to be played on a phone with one hand. No sign-up, no ads, nothing leaves your device.
+built to be played on a phone with one hand. No sign-up, no ads. Nothing leaves your device unless you press Send feedback.
 
 **Play it:** https://dredarkroom.github.io/GlassGroove/ (open it on your phone, tap **Tap to wake the light**, then drag across the picture).
 Add it to your home screen for a full-screen app that also opens with no signal.
@@ -73,10 +73,10 @@ Nothing here has been measured on a real phone yet.
 
 ```
 python -m http.server 5173        # then open http://localhost:5173/
-node --test tests/logic.test.js tests/music.test.js tests/takes.test.js tests/share.test.js
+npm test
 ```
 
-61 tests: the sequencer and file formats (from DevelopDrop's), Takes' editing functions, and the share links.
+`npm test` checks every import exists, then runs the tests (see `tests/README.md`): the sequencer and file formats (from DevelopDrop's), Takes' editing functions, the share links, and Surge.
 
 ```
 index.html, takes.html           the two pages

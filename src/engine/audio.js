@@ -406,6 +406,7 @@ export function createAudio(opts = {}) {
    */
   A.riser = (on, variant, t, len = 8) => {
     if (!ctx) return;
+    len = Number.isFinite(len) ? Math.max(3, len) : 8;                      // never a zero or negative ramp
     if (t == null) t = ctx.currentTime;
     hook(t, 14, on ? 1 : 0, variant ? 1 : 0);
     if (on && !riser) {

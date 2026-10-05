@@ -33,17 +33,19 @@ export function buildBeat(app) {
     dots = [];
     for (let s = 0; s < d.len; s++) {
       const a = (s / d.len) * Math.PI * 2 - Math.PI / 2;
-      const c = svgEl('circle', { cx: (rad * Math.cos(a)).toFixed(2), cy: (rad * Math.sin(a)).toFixed(2), r: pr.toFixed(2), class: 'dot' + (d.steps[s] ? ' on' : ''), 'data-s': s });
+      const c = svgEl('circle', { cx: (rad * Math.cos(a)).toFixed(2), cy: (rad * Math.sin(a)).toFixed(2), r: pr.toFixed(2), class: 'dot' + (d.steps[s] ? ' on' : ''), 'data-s': s,
+        role: 'button', tabindex: 0, 'aria-pressed': String(!!d.steps[s]), 'aria-label': `${NAMES[part]} step ${s + 1} of ${d.len}` });
       svg.append(c); dots.push(c);
     }
     const t = svgEl('text', { x: 0, y: 1, class: 'ringtext' }); t.textContent = `${d.hits} of ${d.len}`;
     const sub = svgEl('text', { x: 0, y: 9, class: 'ringsub' }); sub.textContent = 'tap the dots';
     svg.append(t, sub);
-    svg.addEventListener('click', (e) => {
-      const c = e.target.closest('.dot'); if (!c) return;
+    const toggleStep = (c) => {
       const s = +c.dataset.s; d.steps[s] = !d.steps[s]; d.hits = d.steps.filter(Boolean).length;
-      c.classList.toggle('on', d.steps[s]); c.classList.remove('ghost'); t.textContent = `${d.hits} of ${d.len}`;
-    });
+      c.classList.toggle('on', d.steps[s]); c.classList.remove('ghost'); c.setAttribute('aria-pressed', String(!!d.steps[s])); t.textContent = `${d.hits} of ${d.len}`;
+    };
+    svg.addEventListener('click', (e) => { const c = e.target.closest('.dot'); if (c) toggleStep(c); });
+    svg.addEventListener('keydown', (e) => { if (e.key !== 'Enter' && e.key !== ' ') return; const c = e.target.closest && e.target.closest('.dot'); if (c) { e.preventDefault(); toggleStep(c); } });
     editor.replaceChildren(h('div', { class: 'ringbox' }, svg));
     const redo = () => { S.regen(part); render(); };
     const btn = (label, fn) => h('button', { type: 'button', class: 'btn', onclick: fn }, label);
@@ -102,7 +104,7 @@ export function buildBeat(app) {
   }
 
   function render() {
-    partBtns.forEach((b, i) => { b.setAttribute('aria-selected', String(i === part)); b.classList.toggle('muted', isMuted(i)); b.querySelector('small').textContent = isMuted(i) ? 'muted' : 'on'; });
+    partBtns.forEach((b, i) => { b.setAttribute('aria-pressed', String(i === part)); b.classList.toggle('muted', isMuted(i)); b.querySelector('small').textContent = isMuted(i) ? 'muted' : 'on'; });
     nowDot = -1; nowCol = -1;
     if (part < 3) renderRing(); else renderBass();
     renderExtra();

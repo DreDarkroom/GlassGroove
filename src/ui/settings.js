@@ -1,11 +1,11 @@
 /* Glass Groove: Settings. Plain sentences, switches you can hit with a thumb. Pro view and Developer mode live here and nowhere else. */
 import { $, h } from '../util.js';
 import { CONFIG } from '../config.js';
-import { toast } from './dom.js';
+import { toast, modal } from './dom.js';
 
 export function buildSettings(app) {
   const box = $('#settings');
-  let open = false;
+  let open = false, releaseModal = null;
 
   const sw = (title, sub, get, set, disabled) => {
     const inp = h('input', { type: 'checkbox', checked: get() ? true : null, disabled: disabled ? true : null });
@@ -37,8 +37,9 @@ export function buildSettings(app) {
     open = force != null ? force : !open;
     box.hidden = !open;
     if (open && !was) app.nav.push('settings', () => toggle(false)); else if (!open && was) app.nav.release('settings');
+    if (!open && releaseModal) { releaseModal(); releaseModal = null; }
     $('#gear').setAttribute('aria-expanded', String(open));
-    if (open) build();
+    if (open) { build(); releaseModal = modal(box); const first = box.querySelector('button, input'); if (first) first.focus(); }
   }
   $('#gear').addEventListener('click', () => toggle());
   Object.assign(app, { toggleSettings: toggle, settingsOpen: () => open, closeModals: () => toggle(false) });

@@ -34,3 +34,20 @@ test('a surge can be moved longer, shorter and to the next beat, and cancelling 
   assert.equal(S.surgeTick, 0);
   assert.equal(S.dropAt, null);
 });
+
+test('after a long stall the scheduler skips what it missed and a surge drop still lands on a bar line, once', () => {
+  const A = fakeAudio(), S = createSeq(A, { emit: () => {} }), bars = [];
+  S.onBar = (n) => bars.push(n);
+  let drops = 0; S.playing = true; S._setTick(0, 0.05); A._now = 0;
+  S._pump();                                                       // the clock has been running: a few ticks are scheduled
+  const target = S.surgeStart(2);                                  // a two-bar surge
+  S.onDrop = () => { drops++; };
+  A._now = 30;                                                     // the page froze for half a minute (many bars at 120 bpm)
+  S._pump();
+  assert.ok(S.stalls >= 1, 'a stall was noticed');
+  assert.ok(bars.length >= 10, 'the bars that went by were still counted');
+  A._now = 40; S._pump(); A._now = 45; S._pump();
+  assert.equal(drops, 1, 'the drop ran exactly once');
+  assert.equal(S.build, null);
+  assert.ok(target % 16 === 0);
+});

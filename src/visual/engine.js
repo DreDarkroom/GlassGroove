@@ -35,7 +35,8 @@ function climbTint(base, p, lv) {
   hue = (hue * 60 + 360 + p * 250) % 360;
   const s = Math.min(1, 0.6 + lv.mid * 0.5), l = Math.min(0.96, 0.46 + 0.4 * p * p + lv.high * 0.2 + (p > 0.9 ? (p - 0.9) * 3 : 0));
   const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs(((hue / 60) % 2) - 1)), m = l - c / 2, k = Math.floor(hue / 60) % 6;
-  const rr = [c, x, 0, 0, x, c][k], gg = [x, c, c, x, 0, 0][k], bb = [0, 0, x, c, c, x][k];
+  let rr, gg, bb;
+  switch (k) { case 0: rr = c; gg = x; bb = 0; break; case 1: rr = x; gg = c; bb = 0; break; case 2: rr = 0; gg = c; bb = x; break; case 3: rr = 0; gg = x; bb = c; break; case 4: rr = x; gg = 0; bb = c; break; default: rr = c; gg = 0; bb = x; }
   TMP[0] = (rr + m) * 255; TMP[1] = (gg + m) * 255; TMP[2] = (bb + m) * 255;
   return TMP;
 }

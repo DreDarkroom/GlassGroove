@@ -2,7 +2,7 @@
    a note written offline waits on the device and goes when there is a connection. The message is plain text: a kind, the words, and (only if ticked) the app version and screen size. */
 import { $, h } from '../util.js';
 import { CONFIG } from '../config.js';
-import { toast } from './dom.js';
+import { toast, modal } from './dom.js';
 
 const KINDS = [['Idea', 'bulb'], ['Problem', 'warning'], ['Request', 'sparkles'], ['Love it', 'heart']];
 const MAX = 600, QUEUE = 'feedbackQueue';
@@ -13,17 +13,25 @@ export function buildFeedback(app) {
   async function post(note) {
     const r = await fetch(`https://ntfy.sh/${CONFIG.feedbackTopic}`, {
       method: 'POST', body: note.text,
-      headers: { Title: `${CONFIG.name}: ${note.kind}`, Tags: (KINDS.find((k) => k[0] === note.kind) || KINDS[0])[1], Priority: '3' },
+      headers: { Title: `${CONFIG.name}: ${note.kind}`.replace(/[^ -~]/g, '?'), Tags: (KINDS.find((k) => k[0] === note.kind) || KINDS[0])[1], Priority: '3' },
     });
     if (!r.ok) throw new Error(`status ${r.status}`);
   }
+  let flushing = false;
   async function flush() {
+    if (flushing || !navigator.onLine) return;                                  // one flush at a time: two at once would send the same note twice
     const q = app.store.get(QUEUE, []);
-    if (!q.length || !navigator.onLine) return;
-    const rest = [];
-    for (const n of q) { try { await post(n); } catch (err) { rest.push(n); } }
-    app.store.set(QUEUE, rest);
-    if (rest.length < q.length) toast('Your saved feedback was sent. Thank you.', 4000);
+    if (!Array.isArray(q) || !q.length) return;
+    flushing = true;
+    let sent = 0;
+    try {
+      for (const n of q.slice()) {
+        if (!n || typeof n.text !== 'string' || typeof n.kind !== 'string') { q.shift(); continue; }       // a damaged entry is dropped
+        try { await post(n); q.shift(); sent++; app.store.set(QUEUE, q); } catch (err) { break; }          // stop at the first failure: keep the order, try again later
+      }
+      app.store.set(QUEUE, q);
+    } finally { flushing = false; }
+    if (sent) toast('Your saved feedback was sent. Thank you.', 4000);
   }
   addEventListener('online', flush);
   setTimeout(flush, 4000);
@@ -36,7 +44,8 @@ export function buildFeedback(app) {
     const info = h('input', { type: 'checkbox', checked: true });
     const chips = KINDS.map(([k]) => h('button', { type: 'button', class: 'chip', 'aria-pressed': String(k === kind), onclick: () => { kind = k; chips.forEach((c) => c.setAttribute('aria-pressed', String(c.textContent === k))); } }, k));
     const send = h('button', { type: 'button', class: 'btn primary', onclick: submit }, 'Send');
-    const close = () => { if (!box) return; box.remove(); box = null; app.nav.release('feedback'); };
+    let releaseModal = null;
+    const close = () => { if (!box) return; box.remove(); box = null; app.nav.release('feedback'); if (releaseModal) releaseModal(); };
     async function submit() {
       const text = area.value.trim();
       if (text.length < 3) return toast('Write a few words first.');
@@ -57,6 +66,7 @@ export function buildFeedback(app) {
       h('p', { class: 'fine quiet', text: 'It is sent through ntfy.sh, a free notification service, so please keep personal details out of it.' }),
       h('div', { class: 'row', style: 'margin-top:10px' }, send));
     document.body.append(box);
+    releaseModal = modal(box);
     app.nav.push('feedback', close);
     area.focus();
   }

@@ -103,6 +103,7 @@ export function buildExtras(app) {
     if (e.metaKey || e.ctrlKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && e.target.type !== 'range' && e.target.type !== 'checkbox') return;
     const k = e.key.toLowerCase();
     if (PB.perf) return;
+    if ((k === ' ' || k === 'enter') && e.target.closest && e.target.closest('.dot, [role="button"], a[href], summary')) return;   // a ring step, link or disclosure that has focus keeps its own Space and Enter (the Rise key still works after a button press)
     if (k === ' ') { e.preventDefault(); if (!e.repeat) app.startBuild(e.shiftKey ? 1 : 0, 'key'); return; }
     if (e.repeat) return;
     if (k === 'escape') { app.closeSheet(); app.closeModals && app.closeModals(); }
