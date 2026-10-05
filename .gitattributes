@@ -1,0 +1,4 @@
+* text=auto eol=lf
+*.sqz binary
+*.png binary
+vendor/lame.min.js -text

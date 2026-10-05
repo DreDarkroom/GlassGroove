@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070b18">
+  <title>Takes | Wipelight</title>
+  <meta name="description" content="Your Wipelight recordings: play them back, trim a video, edit a replay and export the sound. Everything stays on your device.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css?v=0.1.0">
+  <link rel="stylesheet" href="css/takes.css?v=0.1.0">
+</head>
+<body class="takes">
+  <header id="tbar">
+    <a class="btn" href="index.html" title="Back to the instrument">← Wipelight</a>
+    <b>Takes</b>
+    <span class="grow"></span>
+    <span id="usage" title="How much of this device's storage Takes uses"></span>
+    <button id="import" class="btn" type="button" title="Add a replay (.sqz) or a video from this device">Add file</button>
+    <input id="importfile" type="file" accept=".sqz,.json,.webm,.mp4,.mkv,.wav,.mp3,application/json,video/*,audio/*" multiple hidden>
+  </header>
+
+  <div id="shell">
+    <aside id="lib" aria-label="Your takes">
+      <p class="fine" id="libhint">Recordings you make in Wipelight land here.</p>
+      <ul id="takes"></ul>
+      <button id="keep" class="btn" type="button" title="Ask the browser not to clear your recordings when it runs low on space">Keep my takes safe</button>
+    </aside>
+
+    <main id="work">
+      <section id="empty">
+        <h2>Nothing open</h2>
+        <p>Record in Wipelight (<b>Keep → Record</b>, with <b>Keep it in Takes</b> on), then open it here. You can also drop a file on this page.</p>
+        <p class="fine">A <b>replay</b> is a tiny file of what you played. Here you can hear it again with the picture, tidy it up, and export it as audio. A <b>video</b> can be played, trimmed and saved as a new take. Nothing is uploaded: it all lives on this device.</p>
+      </section>
+
+      <section id="perfview" hidden>
+        <div class="titlebar"><input id="pname" type="text" aria-label="Name" spellcheck="false"><span id="pmeta" class="fine"></span></div>
+        <div id="stagewrap">
+          <canvas id="pic" role="img" aria-label="The replay, with its picture"></canvas>
+          <div id="gate"><button id="gobtn" class="btn primary" type="button">▶ Play</button></div>
+        </div>
+        <div class="transport">
+          <button id="tplay" class="btn" type="button" aria-label="Play">▶</button>
+          <input id="tseek" type="range" min="0" max="100" step="0.01" value="0" aria-label="Position">
+          <span id="ttime">00:00 / 00:00</span>
+        </div>
+        <div class="actions">
+          <button id="wav" class="btn primary" type="button" title="Render the sound to a 24-bit WAV, faster than real time. No sound is played.">Export audio (WAV)</button>
+          <button id="stems" class="btn" type="button" title="Kick, snare, hats, bass and effects as separate WAVs in one zip">Export parts (zip)</button>
+          <button id="vid" class="btn" type="button" title="Replays it and records the picture and sound as a video, in real time">Make a video</button>
+          <button id="export" class="btn" type="button">Download replay</button>
+        </div>
+        <p id="pstatus" class="fine" role="status"></p>
+
+        <details id="editor" class="edit">
+          <summary>Edit the replay</summary>
+          <p class="fine">Easiest on a bigger screen, but it works with a finger: tap an event to select it, drag a box to select a range.</p>
+          <div class="toolrow" id="edit1">
+            <span class="grp"><button id="undo" class="btn" type="button" title="Undo (Ctrl+Z)">Undo</button><button id="redo" class="btn" type="button" title="Redo (Ctrl+Y)">Redo</button></span>
+            <span class="grp"><button id="del" class="btn" type="button" title="Delete the selection (Delete)">Delete</button><button id="dup" class="btn" type="button" title="Copy the selection one bar later">Copy a bar later</button></span>
+            <span class="grp"><select id="qgrid" aria-label="Grid"><option value="4">quarter notes</option><option value="8">eighth notes</option><option value="16" selected>sixteenth notes</option></select><button id="quant" class="btn" type="button" title="Snap the selected notes and hits (or all of them) to the grid (Q)">Tidy timing</button><label class="tick"><input id="snap" type="checkbox" checked> snap when moving</label></span>
+            <span class="grp"><span class="fine">Notes</span><button id="tm12" class="btn" type="button">−12</button><button id="tm1" class="btn" type="button">−1</button><button id="tp1" class="btn" type="button">+1</button><button id="tp12" class="btn" type="button">+12</button></span>
+            <span class="grp"><button id="vdn" class="btn" type="button">Softer</button><button id="vup" class="btn" type="button">Louder</button></span>
+            <span class="grp"><button id="crop" class="btn" type="button" title="Keep only the time range of the selection">Keep selection</button><button id="cutr" class="btn" type="button" title="Remove the time range of the selection and close the gap">Remove selection</button></span>
+            <span class="grp"><select id="addkind" aria-label="Add at the playhead"><option value="scene">Picture</option><option value="light">Mood</option></select><select id="addval" aria-label="Which"></select><button id="addbtn" class="btn" type="button" title="Insert a change at the playhead">Add here</button></span>
+            <span class="grp"><button id="tfit" class="btn" type="button">Zoom to fit</button><button id="tzo" class="btn" type="button" aria-label="Zoom out">−</button><button id="tzi" class="btn" type="button" aria-label="Zoom in">+</button><label class="tick"><input id="follow" type="checkbox" checked> follow</label></span>
+          </div>
+          <canvas id="tl" aria-label="Timeline of the replay"></canvas>
+          <div id="readout" class="fine" aria-live="polite">Tap an event to see it.</div>
+          <div class="actions"><button id="save" class="btn primary" type="button" title="Keep these changes (replaces this take)">Save changes</button><button id="saveas" class="btn" type="button" title="Keep these changes as a new take">Save a copy</button></div>
+        </details>
+
+        <label class="notes"><span>Notes</span><textarea id="pnotes" rows="2" placeholder="What is this take?"></textarea></label>
+        <button id="delete" class="btn danger" type="button">Delete this take</button>
+      </section>
+
+      <section id="videoview" hidden>
+        <div class="titlebar"><input id="vname" type="text" aria-label="Name" spellcheck="false"><span id="vmeta" class="fine"></span></div>
+        <div class="vwrap"><video id="vid2" controls playsinline preload="metadata"></video></div>
+        <div class="trim" aria-label="Trim">
+          <div class="trimbar"><div id="trimsel"></div><input id="tin" type="range" min="0" max="100" step="0.01" value="0" aria-label="Start"><input id="tout" type="range" min="0" max="100" step="0.01" value="100" aria-label="End"></div>
+          <p id="trimtxt" class="fine"></p>
+          <div class="actions">
+            <button id="setin" class="btn" type="button">Start here</button><button id="setout" class="btn" type="button">End here</button>
+            <button id="previewtrim" class="btn" type="button">Preview</button><button id="savetrim" class="btn primary" type="button" title="Records the kept part again, in real time, as a new take">Save trimmed copy</button>
+          </div>
+          <div class="actions"><button id="frame" class="btn" type="button">Save this frame</button><button id="vdl" class="btn" type="button">Download</button></div>
+          <p id="vstatus" class="fine" role="status"></p>
+        </div>
+        <p class="fine" id="vpair"></p>
+        <label class="notes"><span>Notes</span><textarea id="vnotes" rows="2" placeholder="What is this take?"></textarea></label>
+        <button id="vdelete" class="btn danger" type="button">Delete this take</button>
+      </section>
+    </main>
+  </div>
+
+  <div id="dropzone" hidden><p>Drop a replay or a video</p></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="src/takes/main.js?v=0.1.0"></script>
+</body>
+</html>

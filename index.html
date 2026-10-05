@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#070b18">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Wipelight</title>
+  <meta name="description" content="Wipelight: wipe the fog off a glowing picture and make music with your thumbs. Hold Rise, let go to drop. No sign-up, nothing leaves your phone.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%23070b18%22/><circle cx=%2232%22 cy=%2232%22 r=%2216%22 fill=%22%2340f0d0%22/></svg>">
+  <link rel="stylesheet" href="css/style.css?v=0.1.0">
+</head>
+<body>
+  <canvas id="stage" role="img" aria-label="A glowing picture behind fog. Drag to wipe the fog away."></canvas>
+
+  <header id="top">
+    <b class="logo">Wipelight</b>
+    <span class="grow"></span>
+    <button id="pause" class="ico" type="button" aria-label="Pause the music"></button>
+    <button id="hide" class="ico" type="button" aria-label="Hide the controls"></button>
+    <button id="gear" class="ico" type="button" aria-label="Settings" aria-expanded="false" aria-controls="settings"></button>
+  </header>
+
+  <div id="start">
+    <button id="wake" type="button"><span class="orb"></span><span class="cap">Tap to wake the light</span></button>
+    <p>Wipe the fog with your finger. Hold <b>Rise</b>, let go to drop.</p>
+  </div>
+
+  <p id="hint" role="status" aria-live="polite" hidden></p>
+  <button id="rise" type="button" aria-label="Hold to rise. Let go to drop."><span class="ring"></span><span class="word">Rise</span></button>
+
+  <section id="sheet" hidden aria-label="Controls">
+    <div class="grab" id="grab" aria-hidden="true"></div>
+    <div class="pane" id="pane-play" hidden></div>
+    <div class="pane" id="pane-beat" hidden></div>
+    <div class="pane" id="pane-sound" hidden></div>
+    <div class="pane" id="pane-look" hidden></div>
+    <div class="pane" id="pane-keep" hidden></div>
+  </section>
+
+  <nav id="dock" aria-label="Controls">
+    <button type="button" data-tab="play"><span class="i"></span><span class="t">Play</span></button>
+    <button type="button" data-tab="beat"><span class="i"></span><span class="t">Beat</span></button>
+    <button type="button" data-tab="sound"><span class="i"></span><span class="t">Sound</span></button>
+    <button type="button" data-tab="look"><span class="i"></span><span class="t">Look</span></button>
+    <button type="button" data-tab="keep"><span class="i"></span><span class="t">Keep</span></button>
+  </nav>
+
+  <section id="settings" class="modal" hidden role="dialog" aria-label="Settings"></section>
+  <section id="devpanel" class="modal" hidden role="dialog" aria-label="Developer mode"></section>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <input id="pick" type="file" accept=".json,.sqz,application/json,application/octet-stream" hidden>
+  <div id="dropzone" hidden><p>Drop a beat or a replay</p></div>
+
+  <script type="module" src="src/main.js?v=0.1.0"></script>
+</body>
+</html>
