@@ -34,6 +34,7 @@ export function applySnapshot(S, A, j) {
   if (wantDrums && (!Array.isArray(j.drummers) || j.drummers.length !== 3)) return false;
   if (wantSound && !j.params && !('swing' in j) && !('drift' in j) && !('light' in j)) return false;
 
+  if (kind === 'loop') S.style = -1;                         // a loaded beat is no longer any one vibe, so none should look selected
   if (wantPattern) { S.synth.pattern = p; S.home = p.slice(); }
   if (wantDrums) {
     j.drummers.forEach((s, i) => {
