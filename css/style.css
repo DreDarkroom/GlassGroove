@@ -183,3 +183,5 @@ body.vfx-motion .btn:active, body.vfx-motion .chip:active, body.vfx-motion .part
   #rise { bottom: calc(var(--dock-h) + 10px); width: 76px; height: 76px; margin-left: -38px; }
   #toast { bottom: calc(var(--dock-h) + 100px); }
 }
+
+.quiet { opacity: .6; font-size: 12px; margin-top: 10px; }

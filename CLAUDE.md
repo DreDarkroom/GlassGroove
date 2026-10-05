@@ -7,6 +7,10 @@ It is a mobile-first rebuild of DreVelopDrop (which grew from DevelopDrop): the 
 Files from the relatives (`app: "DreVelopDrop"`, `"SquidgySqueegee"`, `"DevelopDrop"`) must keep loading: `isOurs()` in `src/config.js` decides.
 The DJ aliases DreDarkroom, SafeLight and SquidgySqueegee stay separate from the project name. No real names anywhere in the repository.
 
+## Licensing (owner's stance)
+
+Everything is closed (all rights reserved) for now. Welcome feedback, suggestions and requests, and say plainly that reuse and commercial licences are not defined yet while the project is still being tinkered with. Keep the notice subtle (README bottom, small line in Settings > About), never a wall of legalese. Do not add a licence file without the owner's go-ahead.
+
 ## Working rules
 
 - Mobile first: design for a 375 px wide screen held in one hand, then add room for wider screens. Nothing tappable under 44 px. Test every change in a phone-sized viewport before a desktop one.

@@ -74,4 +74,8 @@ src/engine/, src/perf/, src/visual/, src/rec/    audio, sequencer, file formats,
 src/share.js                     beats as links
 ```
 
-No licence has been chosen yet, so all rights are reserved by default; the vendored LAME encoder keeps its own LGPL licence.
+## Feedback and re-use
+
+Feedback, suggestions and requests are very welcome: open an issue or get in touch. Wipelight is still being tinkered with and tested, so ready-made re-use licences are not defined yet.
+Until they are, all rights are reserved: please ask permission before re-using any of it, and before any commercial use. Whether and how to license it more openly will be reviewed later.
+The vendored LAME encoder keeps its own LGPL licence.

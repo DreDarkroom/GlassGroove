@@ -26,6 +26,7 @@ export function buildSettings(app) {
       h('p', { class: 'fine', text: 'Space: hold to rise, let go to drop. A W S E D F T G Y H U J K O L P: play the bass. 1 2 3: mood. ; and \': vibe. [ and ]: speed. Z X V B: mute kick, snare, hats, bass. Enter: pause. `: hide the controls.' }),
       h('h3', { text: 'About' }),
       h('p', { class: 'fine' }, `Wipelight ${CONFIG.version}. Everything stays on your device. `, h('a', { href: CONFIG.repoUrl, rel: 'noopener', text: 'Source' }), '.'),
+      h('p', { class: 'fine quiet', text: 'Feedback, suggestions and requests are welcome. Wipelight is still being tinkered with and tested, so its re-use and licensing terms are not settled yet. If you would like to reuse any of it, or use it commercially, please ask first.' }),
       h('button', { type: 'button', class: 'btn danger', style: 'margin-top:8px', onclick: () => { if (confirm('Forget every setting and saved beat on this device? Your recordings in Takes stay.')) { Object.keys(localStorage).filter((k) => k.startsWith('wipelight.')).forEach((k) => localStorage.removeItem(k)); toast('Forgotten. Reloading…'); setTimeout(() => location.reload(), 600); } } }, 'Forget my settings'),
     );
   }

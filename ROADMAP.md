@@ -16,6 +16,25 @@ share links, record, Takes (replay editor, WAV and parts export, video trim), ha
 - **Two phones:** pair them by QR code (WebRTC) so one plays the picture and the other the controls.
 - **Sound on phones:** move the heavy parts of the mix to an AudioWorklet.
 
+## Developer and debugging modes, and watching resources
+
+Developer mode exists today (Settings, or `?dev=1`): live frame time by section, audio nodes and sounds a second, scheduler lead, memory, switches for each costly part, a benchmark and a log.
+What it does not do yet, in order of how much it would help on a phone:
+
+- **A phone-sized panel.** Today's panel is a desktop-style overlay. Make it a bottom sheet with big switches, and a *Copy report* button that puts the numbers, the device and the settings on the clipboard, so a test on a phone can be pasted into a message.
+- **Audio health first.** Dropouts and glitches matter more than frame rate for a music app: count underruns (a late scheduler tick, `AudioContext` `baseLatency` and `outputLatency`, and the render-capacity numbers where the browser gives them), and flag them in the log with what was happening (a Rise, a drop, a recording).
+- **Frame rate and long frames.** Frames a second, the worst frame in the last ten seconds, and a count of long tasks (`PerformanceObserver`). Show a small trace, not just a number, so a stutter at the drop is visible.
+- **Battery and heat, where the browser allows.** The Battery API (level, charging, and drain a minute) works on Chrome for Android but not on iPhone. Where it is missing, say so instead of showing zero. Heat is not exposed to web pages, so the proxy is a falling frame rate or rising scheduler lag after several minutes: a **soak test** mode that runs Autopilot for 10 to 30 minutes and logs those against battery, to show whether the phone is struggling.
+- **Memory.** Heap size where `performance.memory` or `measureUserAgentSpecificMemory` exist, plus our own counts (decoded recordings, canvas sizes, live audio nodes) so a leak shows up as a number that only goes up.
+- **GPU.** Web pages cannot read GPU load. The honest substitutes: picture cost per frame (canvas passes and pixels, which are counted exactly), the renderer name from `WEBGL_debug_renderer_info` to know what hardware is running, and the quality switches that trade picture for speed. No fake "GPU %" gauge.
+- **Automatic quality.** Use those numbers: if the frame rate stays low or the scheduler lead shrinks, lower the picture quality a step and say so, and bring it back when there is room.
+- **Saved test runs.** Keep the last few soak and benchmark runs on the device with the device model, so changes between versions can be compared, with the measurement caveats written next to the numbers.
+- **Opt-in only.** Nothing is sent anywhere. A report leaves the device only when a person copies it.
+
+## Hands-free use
+
+Autopilot is meant for when your hands are busy, so it needs to be dependable: keep the screen awake and recover if the audio is interrupted (a phone call, switching apps), show a clear *Autopilot is running* state, a large Stop, and lock-screen controls (Media Session) so playback can be paused without finding the page.
+
 ## Principles
 
 - One hand, one thumb: nothing important is out of reach, nothing tappable is small.
