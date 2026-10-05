@@ -1,4 +1,9 @@
-# Wipelight: roadmap
+# Glass Groove: roadmap
+
+## Shipped in 0.2
+
+The Back button and Leave guard, background play with notification controls and Float, Surge, trippier presses, in-app feedback, full offline caching, scheduler stall recovery.
+**Not yet checked on a real phone:** the notification and lock-screen buttons, whether Float appears and keeps moving, how long audio survives in the background, Surge colours on a real display, and how the drop sounds. These come first.
 
 ## Shipped in 0.1
 
@@ -6,6 +11,11 @@ A new mobile-first interface over DreVelopDrop's engines: the dock and sheets, t
 share links, record, Takes (replay editor, WAV and parts export, video trim), haptics, left-handed, battery saver, installable and offline, Pro view and developer mode.
 
 ## Next
+
+- **Offline extras worth adding:** a downloadable *Packs* page for optional sound packs (extra kits, more vibes) stored in the device's own storage; the Takes library already stays on the device. Everything in 0.2 is synthesised, so no download is needed yet.
+- **Background audio, properly:** if Android still stops sound with the screen off, route the output through a media element (a stream from the audio engine) so it counts as real media playback.
+- **Surge presets:** save a favourite length and landing, and a *Build my own* mode: choose what drops out as it rises.
+- **A haptic climb:** a vibration that speeds up with the countdown.
 
 - **Test it on real phones.** Frame rate, heat and battery on a mid-range Android and an iPhone, and tune the picture quality and the audio buffer from what is found. Nothing in this repository has been measured on a phone yet.
 - **Bring back what was left out, as things that fit a phone:** a *Loop* button that captures the last four bars and layers it (clips, but one tap); a *Journey* slider that eases the speed and the picture up over a time you choose; MIDI in Pro view.

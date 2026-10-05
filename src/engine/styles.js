@@ -1,4 +1,4 @@
-/* Wipelight: moods and vibes. Plain data.
+/* Glass Groove: moods and vibes. Plain data.
    A vibe is a complete starting point (tempo, drum kit, patterns, rings, sound, mood, picture): original patterns, named for what they feel like. */
 
 /** The mood you play in decides the musical mode, and tints the picture and the controls. */

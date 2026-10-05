@@ -1,4 +1,4 @@
-/* Wipelight: recording and export.
+/* Glass Groove: recording and export.
    Ways to keep a set:
      perf     the compact, replayable performance (.sqz): what the instrument DID, not the sound; the Studio edits it
      webm     the picture and the sound together as a lean WebM (VP9 + Opus, about 3 Mbps): the everyday video
@@ -161,7 +161,7 @@ export function createRecording({ audio: A, perf, snapshot, canvas }) {
       if (sink.kind === 'memory' && bytes > R.memoryLimit && R.state.active) R.stop('this browser is holding the recording in memory, so it was saved at 1.5 GB to protect your set. Chrome or Edge can stream long recordings straight to disk').catch(() => {});
       return chain;
     };
-    const perfSink = () => (studio ? studioSink('performance', `${base}.sqz`, 'application/octet-stream', { format }) : fileSink(`${base}.sqz`, 'application/octet-stream', 'sqz', 'Wipelight performance'));
+    const perfSink = () => (studio ? studioSink('performance', `${base}.sqz`, 'application/octet-stream', { format }) : fileSink(`${base}.sqz`, 'application/octet-stream', 'sqz', 'Glass Groove performance'));
     const startPerf = () => { perf.start(A.now(), snapshot()); A.hook = (...a) => perf.log(...a); };
 
     try {

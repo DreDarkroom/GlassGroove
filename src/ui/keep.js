@@ -1,4 +1,4 @@
-/* Wipelight: the Keep tab. Record, share a beat as a link, save a beat on this phone, open a file, and go to Takes (where recordings live).
+/* Glass Groove: the Keep tab. Record, share a beat as a link, save a beat on this phone, open a file, and go to Takes (where recordings live).
    Opening files and dropping them on the page both come through here. */
 import { $, h, fmtBytes, fmtTime } from '../util.js';
 import { isOurs } from '../config.js';
@@ -60,7 +60,7 @@ export function buildKeep(app) {
   async function share() {
     try {
       const url = await beatUrl(snapshot(S, A), location.href.split('#')[0]);
-      if (navigator.share) { try { await navigator.share({ title: 'A Wipelight beat', text: 'Open it, and press Wake the light.', url }); return; } catch (err) { if (err && err.name === 'AbortError') return; } }
+      if (navigator.share) { try { await navigator.share({ title: 'A Glass Groove beat', text: 'Open it, and press Wake the light.', url }); return; } catch (err) { if (err && err.name === 'AbortError') return; } }
       await navigator.clipboard.writeText(url);
       toast('Link copied. Paste it into a message.');
     } catch (err) { toast('Could not make a link here. Try Save instead.'); }
@@ -81,7 +81,7 @@ export function buildKeep(app) {
     let j = null;
     try { j = JSON.parse(await f.text()); } catch (err) { /* handled below */ }
     if (j && j.kind === 'performance') return toast('That is a replay: add it as a .sqz file.');
-    if (!j || !isOurs(j) || !applySnapshot(S, A, j)) return toast(`${f.name} is not a beat Wipelight can use. Nothing was changed.`);
+    if (!j || !isOurs(j) || !applySnapshot(S, A, j)) return toast(`${f.name} is not a beat Glass Groove can use. Nothing was changed.`);
     app.refreshAll(); toast('Beat opened.');
   }
   const pick = $('#pick');
@@ -96,6 +96,7 @@ export function buildKeep(app) {
   const takesLink = h('a', { class: 'btn', href: 'takes.html' }, 'Open Takes');
   const paintTakes = () => { takesLink.href = app.lastTake ? `takes.html?take=${app.lastTake}` : 'takes.html'; };
 
+  const fbBtn = h('button', { type: 'button', class: 'btn wide', style: 'margin-top:14px', onclick: () => app.feedback.open() }, 'Send feedback or a suggestion');
   pane.append(
     h('h2', { text: 'Keep' }),
     h('h3', { text: 'Record' }), recBtn, h('div', { style: 'margin-top:10px' }, fmtBox), info, takesRow,
@@ -104,6 +105,7 @@ export function buildKeep(app) {
       h('button', { type: 'button', class: 'btn', onclick: load }, 'Load saved beat'), h('button', { type: 'button', class: 'btn', onclick: () => pick.click() }, 'Open a file')),
     h('h3', { text: 'Your recordings' }), h('div', { class: 'row' }, takesLink),
     h('p', { class: 'fine', text: 'Takes plays them back, trims videos, edits replays and exports sound.' }),
+    fbBtn,
   );
   app.onTab.keep = paintFmt;
   paintFmt();

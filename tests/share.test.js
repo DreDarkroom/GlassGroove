@@ -20,7 +20,7 @@ test('a beat survives the trip into a link and back, and the link is short', asy
 });
 
 test('the address puts the beat after the #, which is never sent to a server', async () => {
-  const u = await beatUrl({ app: 'Wipelight', kind: 'loop', version: 1, pattern: new Array(16).fill(-1) }, 'https://example.test/wipelight/index.html?x=1#old');
+  const u = await beatUrl({ app: 'Glass Groove', kind: 'loop', version: 1, pattern: new Array(16).fill(-1) }, 'https://example.test/wipelight/index.html?x=1#old');
   const url = new URL(u);
   assert.equal(url.search, '?x=1');
   assert.ok(url.hash.startsWith('#b='));
@@ -35,7 +35,7 @@ test('damaged, foreign or absurd links are refused with a plain reason', async (
   await assert.rejects(decodeBeat('AAAAAAAA'), /damaged/);
   const other = await encodeBeat({ app: 'SomethingElse', kind: 'loop' });
   await assert.rejects(decodeBeat(other), /not a beat/);
-  const notLoop = await encodeBeat({ app: 'Wipelight', kind: 'clip' });
+  const notLoop = await encodeBeat({ app: 'Glass Groove', kind: 'clip' });
   await assert.rejects(decodeBeat(notLoop), /not a beat/);
 });
 

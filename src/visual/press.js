@@ -1,4 +1,4 @@
-/* Wipelight: presses that feed the picture.
+/* Glass Groove: presses that feed the picture.
    Every press on the screen or on any control becomes a small event: where it was, which control it was, how hard. It does three things at once.
    1. It blooms in the picture right away: a ring and a glyph at the spot, folded into the kaleidoscope like everything else.
    2. It is remembered: the last presses stir the "seed" the scenes use to vary themselves, so what you press changes what the picture generates next.

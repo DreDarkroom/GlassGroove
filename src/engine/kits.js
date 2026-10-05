@@ -1,4 +1,4 @@
-/* Wipelight: the character of the three drummers. Plain data. */
+/* Glass Groove: the character of the three drummers. Plain data. */
 export const KIT_NAMES = ['safelight', 'electro', 'minimal', 'rave', 'dnb'];
 
 export const KITS = {

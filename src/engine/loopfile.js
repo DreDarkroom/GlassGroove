@@ -1,4 +1,4 @@
-/* Wipelight: loops and clips as small files. A loop is a JSON snapshot: kept in the browser, or exported / imported.
+/* Glass Groove: loops and clips as small files. A loop is a JSON snapshot: kept in the browser, or exported / imported.
    Everything is checked BEFORE anything changes, so a bad file can never half-load. */
 import { CONFIG, isOurs } from '../config.js';
 import { clamp, store } from '../util.js';

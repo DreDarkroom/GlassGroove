@@ -1,4 +1,4 @@
-/* Wipelight: the Play tab. Eight big keys that play the bass in the scale of the current mood (slide a finger across them), an octave shift, and Autopilot,
+/* Glass Groove: the Play tab. Eight big keys that play the bass in the scale of the current mood (slide a finger across them), an octave shift, and Autopilot,
    which builds and drops by itself so you can just watch, or record. */
 import { $, h } from '../util.js';
 import { hint } from './dom.js';
@@ -45,6 +45,7 @@ export function buildPlay(app) {
     if (!pilot) { S.buildRelease(); app.dropBuild(); }
     hint(pilot ? 'Autopilot on: it will build and drop by itself.' : 'Autopilot off.');
   });
+  S.onBar = () => app.autopilotBar();                                // counted by the scheduler, so Autopilot keeps going with the screen off
   app.autopilotBar = () => {
     if (!pilot || !S.playing) return;
     bars++;
@@ -53,12 +54,24 @@ export function buildPlay(app) {
     else if (at === 20 && S.build) S.buildRelease();
   };
 
+  /* ---- surge: a long rise that drops by itself ---- */
+  const lens = [4, 8, 16].map((n) => h('button', { type: 'button', class: 'chip', 'aria-pressed': String(app.surge.bars() === n), onclick: () => { app.surge.setBars(n); lens.forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.n === n))); } }, `${n} bars`));
+  lens.forEach((b, i) => { b.dataset.n = [4, 8, 16][i]; });
+  const surge = h('button', { type: 'button', class: 'btn primary wide', onclick: () => app.surge.start() }, 'Start a surge');
+  const float = app.nav.float.supported ? h('button', { type: 'button', class: 'btn wide', onclick: () => app.nav.float.toggle() }, 'Float a small player') : null;
+
   pane.append(
     h('h2', { text: 'Play the bass' }),
     keys,
     h('div', { class: 'row', style: 'margin-top:10px;justify-content:space-between' }, lower, oct, higher),
     h('h3', { text: 'Autopilot' }),
     h('label', { class: 'switch' }, h('span', null, 'Build and drop by itself', h('small', { text: 'A four-bar rise every 24 bars. Good for watching, or for recording.' })), auto),
+    h('h3', { text: 'Surge' }),
+    h('p', { class: 'fine', text: 'A long rise that drops by itself, with a countdown. Quick way in: tap the picture twice with two fingers.' }),
+    h('div', { class: 'chips' }, lens), surge,
+    float ? h('h3', { text: 'Leave it playing' }) : null,
+    float ? h('p', { class: 'fine', text: 'The music keeps going when you switch apps or lock the phone. Float puts a small player on top of other apps.' }) : null,
+    float,
   );
   Object.assign(app, { pilotOff: () => { auto.checked = false; pilot = false; } });
 }

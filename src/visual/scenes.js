@@ -1,4 +1,4 @@
-/* Wipelight: the scenes. Each is drawn once per frame into a square canvas, centre at (512, 512), but only the wedge near angle 0..a is ever seen
+/* Glass Groove: the scenes. Each is drawn once per frame into a square canvas, centre at (512, 512), but only the wedge near angle 0..a is ever seen
    (the kaleidoscope folds it), so everything lives in that slice. A scene reads the shared state `st` (phase, seed, ...) and never keeps its own.
    0 tentacles · 1 dot grid · 2 film frames · 3 spokes · 4 ink (new: soft clouds that bloom where you press). */
 export const TAU = Math.PI * 2;

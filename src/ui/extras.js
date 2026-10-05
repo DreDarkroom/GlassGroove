@@ -1,4 +1,4 @@
-/* Wipelight: the things around the edges that make it feel like a phone app: haptics on the beat, keeping the screen awake, a battery saver that switches itself on,
+/* Glass Groove: the things around the edges that make it feel like a phone app: haptics on the beat, keeping the screen awake, a battery saver that switches itself on,
    the bloom under every press (which also feeds the picture), and, on a keyboard, shortcuts. */
 import { clamp, hashStr } from '../util.js';
 import { hint, toast } from './dom.js';
@@ -92,7 +92,6 @@ export function buildExtras(app) {
       case 'kick': app.buzz([6]); break;
       case 'drop': app.buzz([40, 30, 80]); break;
       case 'style': app.refreshAll(); break;
-      case 'cycle': app.autopilotBar && app.autopilotBar(); break;
       case 'dropArmed': hint('Drop…', Math.max(500, (e.a || 0) * 1000 + 300)); clearTimeout(armedTimer); break;
       default:
     }

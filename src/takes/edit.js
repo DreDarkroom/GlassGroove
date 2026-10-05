@@ -1,4 +1,4 @@
-/* Wipelight Takes: editing a performance. Pure functions on a list of events [{id, t, code, a}] (sorted by t), so they can be tested without a browser.
+/* Glass Groove Takes: editing a performance. Pure functions on a list of events [{id, t, code, a}] (sorted by t), so they can be tested without a browser.
    Every function returns a NEW list (the old one stays valid: that is the undo history). Selections are Sets of event ids. */
 import { C } from '../perf/format.js';
 

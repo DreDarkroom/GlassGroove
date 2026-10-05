@@ -1,4 +1,4 @@
-/* Wipelight: the picture.
+/* Glass Groove: the picture.
    A small scene is folded into a kaleidoscope, fed back into itself as a tunnel, tinted by the light you chose, and hidden behind a fog you wipe away
    with a squeegee (which now leaves drips, because it is wet). Presses anywhere stir the generator (see press.js).
 
@@ -27,6 +27,19 @@ const LEVELS = [
 // Judged one SECOND at a time by average frame rate, not frame by frame: displays and compositors deliver uneven frames even when everything is fine.
 const SLOW_FPS = 36, SLOW_SECONDS = 4, GOOD_FPS = 44;
 
+const TMP = [0, 0, 0];
+/** Where the colour goes as a build climbs: the hue turns through the spectrum, brightness follows the pitch of the riser, vividness follows how loud the middle is. */
+function climbTint(base, p, lv) {
+  const r = base[0] / 255, g = base[1] / 255, b = base[2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let hue = d === 0 ? 0 : mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  hue = (hue * 60 + 360 + p * 250) % 360;
+  const s = Math.min(1, 0.6 + lv.mid * 0.5), l = Math.min(0.96, 0.46 + 0.4 * p * p + lv.high * 0.2 + (p > 0.9 ? (p - 0.9) * 3 : 0));
+  const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs(((hue / 60) % 2) - 1)), m = l - c / 2, k = Math.floor(hue / 60) % 6;
+  const rr = [c, x, 0, 0, x, c][k], gg = [x, c, c, x, 0, 0][k], bb = [0, 0, x, c, c, x][k];
+  TMP[0] = (rr + m) * 255; TMP[1] = (gg + m) * 255; TMP[2] = (bb + m) * 255;
+  return TMP;
+}
+
 export function createVisual({ audio: A }) {
   const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   const V = {
@@ -40,7 +53,7 @@ export function createVisual({ audio: A }) {
     stats: { fps: 0, frameMs: 0, level: 'high', mode: 'auto', downgrades: 0, upgrades: 0, recovery: 0, errors: 0, scene: 0, sections: {}, ripples: 0, eco: false },
   };
   const st = {
-    t: 0, phase: 0, spin: 0, n: 8, rot: 0, kick: 0, snare: 0, flash: 0, scene: 0, prevScene: 0, mix: 1, progress: 0, building: 0, bld: 0,
+    t: 0, phase: 0, spin: 0, n: 8, rot: 0, kick: 0, snare: 0, flash: 0, scene: 0, prevScene: 0, mix: 1, progress: 0, building: 0, bld: 0, surge: 0, surgeT: 0, band: 0, after: 0, rotA: 0,
     seed: 0, sw: 0, energy: 0, wx: 0, wy: 0, tint: [255, 52, 32], tintTo: [255, 52, 32],
   };
   const press = createPress(), rings = [], sparks = [], drips = [];
@@ -131,7 +144,14 @@ export function createVisual({ audio: A }) {
   /** 0 none, 1 lift, 2 sink: tension builds in the picture while a build is held. */
   V.setBuild = (v) => { st.building = v | 0; };
   /** The drop: flash, a hard zoom and spin, and the fog punched open. */
-  V.drop = () => { st.building = 0; st.bld = 0; st.kick = 1; if (!reduce) { st.flash = 1; st.spin += 0.3; } punchFog(); };
+  /** The climb to a drop, 0..1 (a surge sets it; a held Rise adds its own). The colours follow it, like a sound that rises in pitch and loudness is seen as brighter and more vivid. */
+  V.setSurge = (p) => {
+    st.surgeT = clamp(p, 0, 1);
+    const band = st.surgeT < 0.01 ? -1 : st.surgeT < 0.33 ? 0 : st.surgeT < 0.66 ? 1 : 2;
+    if (band !== st.band) { st.band = band; if (band >= 0 && !V.replay) V.setKaleido([8, 10, 12][band]); }
+  };
+  V.tintNow = () => st.tint;
+  V.drop = () => { st.after = 3.5; st.building = 0; st.bld = 0; st.kick = 1; if (!reduce) { st.flash = 1; st.spin += 0.3; } punchFog(); };
 
   /* ---- the squeegee ---- */
   /** One squeegee stroke segment. `size` (0.15 to 1.5, default 1) scales the blade: a pen's pressure makes it fine. */
@@ -278,7 +298,7 @@ export function createVisual({ audio: A }) {
     const raw = (ms - last) / 1000;
     last = ms;
     const t0 = performance.now();
-    try { draw(Math.min(0.05, raw || 0.016)); } catch (err) { V.stats.errors++; if (V.stats.errors === 1) console.error('Wipelight: a frame failed and was skipped', err); }
+    try { draw(Math.min(0.05, raw || 0.016)); } catch (err) { V.stats.errors++; if (V.stats.errors === 1) console.error('Glass Groove: a frame failed and was skipped', err); }
     if (raw > 0 && raw < 0.25) { acc += raw; accN++; V.stats.frameMs = V.stats.frameMs * 0.9 + (performance.now() - t0) * 0.1; }   // ignore the gap when the tab was hidden
     if (ms - statsAt > 1000 && accN) judge(ms);
   }
@@ -315,9 +335,14 @@ export function createVisual({ audio: A }) {
     const wd = Math.pow(0.04, dt); st.wx *= wd; st.wy *= wd;  // and the tunnel's lean settles
     st.bld += ((st.building ? 1 : 0) - st.bld) * Math.min(1, dt * (st.building ? 0.4 : 6));
     st.mix = Math.min(1, st.mix + dt / 2.2);
-    st.rot = st.t * (reduce ? 0.01 : 0.05) + st.spin;
-    const tension = st.bld;
-    for (let i = 0; i < 3; i++) st.tint[i] += (st.tintTo[i] - st.tint[i]) * Math.min(1, dt * 4);
+    st.surge += (st.surgeT - st.surge) * Math.min(1, dt * 3);
+    const climb = Math.max(st.surge, st.bld * 0.8);            // 0..1: how far up the build is
+    st.rotA += dt * (reduce ? 0.01 : 0.05 + climb * 0.45);
+    st.rot = st.rotA + st.spin;
+    const tension = Math.max(st.bld, st.surge * 0.9);
+    const aim = climb > 0.01 ? climbTint(st.tintTo, climb, lv) : st.tintTo, rate = st.after > 0 ? 1.1 : 4;   // after a drop the colour settles back slowly
+    st.after = Math.max(0, st.after - dt);
+    for (let i = 0; i < 3; i++) st.tint[i] += (aim[i] - st.tint[i]) * Math.min(1, dt * rate);
 
     // 1. the feedback tunnel: last frame, a little bigger and turned, into the other canvas
     const src = fbs[cur], d = fcs[cur ^ 1], dst = fbs[cur ^ 1];
@@ -326,7 +351,7 @@ export function createVisual({ audio: A }) {
       d.save();
       d.translate(W / 2 + st.wx, H / 2 + st.wy);
       d.rotate((reduce ? 0.0005 : 0.003 + st.progress * 0.002) + st.spin * 0.02);
-      const z = 1.012 + st.kick * 0.02 + tension * 0.025 + st.progress * 0.004 + st.energy * 0.004;
+      const z = 1.012 + st.kick * 0.02 + tension * 0.025 + climb * 0.02 + st.progress * 0.004 + st.energy * 0.004;
       d.scale(z, z);
       d.translate(-W / 2, -H / 2);
       d.drawImage(src, 0, 0);
@@ -354,7 +379,7 @@ export function createVisual({ audio: A }) {
       sctx.fillStyle = rgb(st.tint);
       sctx.fillRect(0, 0, W, H);
     }
-    const glow = 0.12 + st.kick * 0.22 + tension * 0.3 + st.progress * 0.06, gr = Math.min(W, H) * 0.7;
+    const glow = 0.12 + st.kick * 0.22 + tension * 0.3 + climb * 0.25 + st.progress * 0.06, gr = Math.min(W, H) * 0.7;
     if (V.dev.glow) {
       const gg = sctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, gr);
       gg.addColorStop(0, rgb(st.tint, glow)); gg.addColorStop(1, rgb(st.tint, 0));

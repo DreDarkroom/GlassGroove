@@ -1,4 +1,4 @@
-/* Wipelight: the heartbeat. It lives in a Web Worker: browsers slow page timers to ~1/s in hidden or covered windows, but worker timers keep time.
+/* Glass Groove: the heartbeat. It lives in a Web Worker: browsers slow page timers to ~1/s in hidden or covered windows, but worker timers keep time.
    Built from a Blob so it also works from file://. Falls back to a plain interval if workers are unavailable. */
 export function makeClock(onTick) {
   let running = false;

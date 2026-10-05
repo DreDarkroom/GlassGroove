@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#070b18">
-  <title>Takes | Wipelight</title>
-  <meta name="description" content="Your Wipelight recordings: play them back, trim a video, edit a replay and export the sound. Everything stays on your device.">
+  <title>Takes | Glass Groove</title>
+  <meta name="description" content="Your Glass Groove recordings: play them back, trim a video, edit a replay and export the sound. Everything stays on your device.">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="css/style.css?v=0.1.0">
-  <link rel="stylesheet" href="css/takes.css?v=0.1.0">
+  <link rel="stylesheet" href="css/style.css?v=0.2.0">
+  <link rel="stylesheet" href="css/takes.css?v=0.2.0">
 </head>
 <body class="takes">
   <header id="tbar">
-    <a class="btn" href="index.html" title="Back to the instrument">← Wipelight</a>
+    <a class="btn" href="index.html" title="Back to the instrument">← Glass Groove</a>
     <b>Takes</b>
     <span class="grow"></span>
     <span id="usage" title="How much of this device's storage Takes uses"></span>
@@ -22,7 +22,7 @@
 
   <div id="shell">
     <aside id="lib" aria-label="Your takes">
-      <p class="fine" id="libhint">Recordings you make in Wipelight land here.</p>
+      <p class="fine" id="libhint">Recordings you make in Glass Groove land here.</p>
       <ul id="takes"></ul>
       <button id="keep" class="btn" type="button" title="Ask the browser not to clear your recordings when it runs low on space">Keep my takes safe</button>
     </aside>
@@ -30,7 +30,7 @@
     <main id="work">
       <section id="empty">
         <h2>Nothing open</h2>
-        <p>Record in Wipelight (<b>Keep → Record</b>, with <b>Keep it in Takes</b> on), then open it here. You can also drop a file on this page.</p>
+        <p>Record in Glass Groove (<b>Keep → Record</b>, with <b>Keep it in Takes</b> on), then open it here. You can also drop a file on this page.</p>
         <p class="fine">A <b>replay</b> is a tiny file of what you played. Here you can hear it again with the picture, tidy it up, and export it as audio. A <b>video</b> can be played, trimmed and saved as a new take. Nothing is uploaded: it all lives on this device.</p>
       </section>
 
@@ -97,6 +97,6 @@
 
   <div id="dropzone" hidden><p>Drop a replay or a video</p></div>
   <div id="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="src/takes/main.js?v=0.1.0"></script>
+  <script type="module" src="src/takes/main.js?v=0.2.0"></script>
 </body>
 </html>

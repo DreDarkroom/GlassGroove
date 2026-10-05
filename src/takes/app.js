@@ -1,4 +1,4 @@
-/* Wipelight Takes: the page. A library of takes on the left; on the right, a performance (replayed with the instrument's own sound and picture, edited on a
+/* Glass Groove Takes: the page. A library of takes on the left; on the right, a performance (replayed with the instrument's own sound and picture, edited on a
    timeline) or a video (played, trimmed). Everything lives in this browser. */
 import { $, el, download, fmtBytes, fmtTime, stamp } from '../util.js';
 import { CONFIG } from '../config.js';

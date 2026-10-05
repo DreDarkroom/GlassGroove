@@ -1,4 +1,4 @@
-/* Wipelight: performing. Wake the light, pause, hide the controls, and the Rise button: hold it and the music thins out and climbs, let go and the drop lands on the beat. */
+/* Glass Groove: performing. Wake the light, pause, hide the controls, and the Rise button: hold it and the music thins out and climbs, let go and the drop lands on the beat. */
 import { $, icon } from '../util.js';
 import { hint } from './dom.js';
 
@@ -37,6 +37,7 @@ export function buildPerform(app) {
     const b = $('#pause');
     b.replaceChildren(icon(S.playing ? 'pause' : 'play'));
     b.setAttribute('aria-label', S.playing ? 'Pause the music' : 'Play the music');
+    if (app.onPlayState) app.onPlayState();
   };
   async function wake() {
     document.body.classList.add('awake');
@@ -45,7 +46,7 @@ export function buildPerform(app) {
     S.start();
     paintPause();
     app.updateWake && app.updateWake();
-    if (!app.store.get('seenHints')) { setTimeout(() => hint('Drag across the picture to wipe the fog.'), 900); setTimeout(() => hint('Hold Rise, then let go to drop.', 5000), 5600); app.store.set('seenHints', true); }
+    if (!app.store.get('seenHints')) { setTimeout(() => hint('Drag across the picture to wipe the fog.'), 900); setTimeout(() => hint('Hold Rise, then let go to drop.', 5000), 5600); setTimeout(() => hint('Tap the picture twice with two fingers for a Surge.', 5000), 11200); app.store.set('seenHints', true); }
   }
   function togglePlay() {
     if (!A.ready || PB.perf) return;
@@ -60,6 +61,6 @@ export function buildPerform(app) {
   $('#gear').replaceChildren(icon('gear'));
   paintPause();
 
-  app.setUiHidden = (on) => { document.body.classList.toggle('ui-hidden', on); if (on) app.closeSheet && app.closeSheet(); };
+  app.setUiHidden = (on) => { const was = document.body.classList.contains('ui-hidden'); document.body.classList.toggle('ui-hidden', on); if (on) { app.closeSheet && app.closeSheet(); if (!was) app.nav.push('hidden', () => app.setUiHidden(false)); } else app.nav.release('hidden'); };
   Object.assign(app, { startBuild, endBuild, dropBuild, togglePlay, wake, paintPause });
 }

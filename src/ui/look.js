@@ -1,4 +1,4 @@
-/* Wipelight: the Look tab: which picture, how much every press blooms, and how hard the picture is allowed to work. */
+/* Glass Groove: the Look tab: which picture, how much every press blooms, and how hard the picture is allowed to work. */
 import { $, h } from '../util.js';
 import { toast } from './dom.js';
 

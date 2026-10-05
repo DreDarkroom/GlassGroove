@@ -1,6 +1,6 @@
 {
-  "name": "Wipelight",
-  "short_name": "Wipelight",
+  "name": "Glass Groove",
+  "short_name": "Glass Groove",
   "description": "Wipe the fog off a glowing picture and make music with your thumbs.",
   "start_url": "./index.html",
   "scope": "./",

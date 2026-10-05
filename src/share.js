@@ -1,4 +1,4 @@
-/* Wipelight: sharing a beat as a link. The beat (a small JSON snapshot) is compressed and written after the # in the address, so it travels in a message
+/* Glass Groove: sharing a beat as a link. The beat (a small JSON snapshot) is compressed and written after the # in the address, so it travels in a message
    and goes nowhere else: the # part of an address is never sent to a server. Pure apart from CompressionStream, which Node and every current browser have. */
 import { CONFIG, isOurs } from './config.js';
 

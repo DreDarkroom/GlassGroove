@@ -1,4 +1,4 @@
-/* Wipelight: WAV writing. Pure functions (no browser APIs) so they can be tested in Node.
+/* Glass Groove: WAV writing. Pure functions (no browser APIs) so they can be tested in Node.
    24-bit PCM is lossless for everything this instrument makes; the header is written first with placeholder sizes and patched when the recording
    ends, so a long set can be streamed to disk without holding it in memory. */
 export const MAX_DATA_BYTES = 0xffffffff - 44 - 8;       // RIFF sizes are 32-bit: about 4 GB per file

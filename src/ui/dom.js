@@ -1,4 +1,4 @@
-/* Wipelight: the few DOM helpers the interface shares. */
+/* Glass Groove: the few DOM helpers the interface shares. */
 import { $ } from '../util.js';
 
 let toastTimer = 0;

@@ -1,4 +1,4 @@
-/* Wipelight: the Takes library. Recordings are kept in this browser (IndexedDB), nowhere else: nothing is uploaded.
+/* Glass Groove: the Takes library. Recordings are kept in this browser (IndexedDB), nowhere else: nothing is uploaded.
    Two stores: `takes` holds the small description of each take (so the list is instant), `blobs` holds the bytes. */
 const DB = 'wipelight', VERSION = 1;
 let dbp = null;

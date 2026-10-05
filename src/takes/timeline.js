@@ -1,4 +1,4 @@
-/* Wipelight Takes: the timeline. A canvas that draws a performance as lanes (bass notes, kick, snare, hats, builds and drops, picture changes, presses,
+/* Glass Groove Takes: the timeline. A canvas that draws a performance as lanes (bass notes, kick, snare, hats, builds and drops, picture changes, presses,
    squeegee strokes, knob moves), and lets you select, move, delete, quantise and transpose what is in them. It never edits anything itself: it asks
    the owner (`on.change(newEvents)`), which keeps the history, so undo is just "go back to the previous list". */
 import { C } from '../perf/format.js';

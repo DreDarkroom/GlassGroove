@@ -1,4 +1,4 @@
-/* Wipelight: the sequencer.
+/* Glass Groove: the sequencer.
    A 16-step bass line that re-writes itself every cycle, three drummers who each loop at a different length, styles, mutes, builds and drops
    that land on the beat, recordable clips that snap to the bar, and a slow "journey" of tempo and visuals.
    Everything that changes the music while it plays is queued to the next beat or bar, so it always lands in time. */
@@ -163,15 +163,35 @@ export function createSeq(A, { emit = (...a) => timed.push(...a) } = {}) {
 
   /* ---------------- builds and drops ---------------- */
   /** Start a build now: variant 0 "lift" (kick drops out, snare roll, the mix thins) or 1 "sink" (the mix goes under water). */
-  S.buildStart = (variant = 0) => {
+  S.buildStart = (variant = 0, len = 8) => {
     if (!S.playing || S.build) return false;
     const t = A.now() + 0.02;
     S.build = { variant: variant ? 1 : 0, t0: t };
     S.dropAt = null;
-    A.riser(true, variant ? 1 : 0, t);
+    A.riser(true, variant ? 1 : 0, t, len);
     emit(t, 'build', variant ? 1 : 0);
     return true;
   };
+
+  /** A surge: a long rise that drops by itself on a bar line `bars` bars from the next one. Returns the drop's tick, or 0 if it could not start. */
+  S.surgeStart = (bars) => {
+    if (!S.playing || S.build) return 0;
+    const tk = S.nextBoundary('bar') + bars * 16;
+    if (!S.buildStart(0, Math.max(8, S.timeToTick(tk) + 0.5))) return 0;
+    S.dropAt = { tick: tk, variant: 0, surge: true };
+    S.surgeTick = tk;
+    emit(A.now(), 'dropArmed', S.timeToTick(tk));
+    return tk;
+  };
+  /** Move a surge's drop by whole bars (never before the next bar). Returns the new tick. */
+  S.surgeShift = (bars) => {
+    if (!S.dropAt || !S.dropAt.surge) return 0;
+    S.dropAt.tick = Math.max(S.nextBoundary('bar'), S.dropAt.tick + bars * 16);
+    S.surgeTick = S.dropAt.tick;
+    return S.surgeTick;
+  };
+  /** Bring a surge's drop to the next beat. */
+  S.surgeNow = () => { if (!S.dropAt || !S.dropAt.surge) return 0; S.dropAt.tick = S.nextBoundary('beat'); S.surgeTick = S.dropAt.tick; return S.surgeTick; };
 
   /** Let go: the drop lands on the next beat or bar (whichever Quantise is set to). */
   S.buildRelease = () => {
@@ -191,17 +211,21 @@ export function createSeq(A, { emit = (...a) => timed.push(...a) } = {}) {
     A.note(t, S.midi(0) - 12, 1, stepDur() * 7, true);      // a deep bass note under the drop
     emit(t, 'kick');
     emit(t, 'drop', variant);
+    if (S.onDrop) { const f = S.onDrop; S.onDrop = null; f(variant); }
     S.build = null;
     S.dropAt = null;
+    S.surgeTick = 0;
   }
 
   /** Cancel a build without a drop (stop pressed, or the music stopped). */
   S.buildCancel = () => {
+    S.onDrop = null;
     if (!S.build) return;
     const t = A.now();
     A.riser(false, S.build.variant, t);
     A.openUp(t, 0.3);
     S.build = null;
+    S.surgeTick = 0;
     S.dropAt = null;
   };
   S.setQuant = (m) => { if (['now', 'beat', 'bar'].includes(m)) S.quant = m; return S.quant; };
@@ -245,6 +269,7 @@ export function createSeq(A, { emit = (...a) => timed.push(...a) } = {}) {
         S.synth.pattern = sanitize(S.evolve(S.synth.pattern.slice()), S.synth.pattern);
         S.driftGhosts();
         emit(t, 'cycle', S.cycle);
+        if (S.onBar) S.onBar(S.cycle, t);                      // from the scheduler itself, so it keeps counting when the picture is not drawing (the page is hidden)
       }
       for (let i = pending.length - 1; i >= 0; i--) if (pending[i].tick <= tk) pending.splice(i, 1)[0].fn();
       journeyStep(tk, t);
@@ -304,6 +329,11 @@ export function createSeq(A, { emit = (...a) => timed.push(...a) } = {}) {
 
   function pump() {
     const now = A.now();
+    if (nextTime < now - 0.25) {                              // the page stalled (a busy frame, a call, the phone sleeping): skip what was missed, so it does not all play at once
+      const skip = Math.ceil((now + 0.05 - nextTime) / stepDur());
+      nextTime += skip * stepDur(); tick += skip;
+      S.stalls = (S.stalls || 0) + 1;
+    }
     while (nextTime < now + A.lookahead) { play(tick, nextTime); nextTime += stepDur(); tick++; }
   }
 

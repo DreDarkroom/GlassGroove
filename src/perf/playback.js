@@ -1,4 +1,4 @@
-/* Wipelight: playback of a recorded performance (.sqz).
+/* Glass Groove: playback of a recorded performance (.sqz).
    One engine, used by the Studio and by the instrument itself (drop a file on the page). It re-plays what the instrument did, every note and drum hit on
    the audio clock and every knob, light, picture, squeegee move and press, through the same synth and visuals as the live instrument. No DOM in here. */
 import { timed } from '../events.js';

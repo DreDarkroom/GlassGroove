@@ -1,4 +1,4 @@
-/* Wipelight: the compact "performance" format (.sqz).
+/* Glass Groove: the compact "performance" format (.sqz).
    Not audio: a recording of WHAT THE INSTRUMENT DID (every note, drum hit, knob move, light change, squeegee stroke and screen press, each with its exact time).
    The Studio and the player re-play it through the same synth and visuals, so an hour-long set is a few hundred KB, and it can be edited like data.
 

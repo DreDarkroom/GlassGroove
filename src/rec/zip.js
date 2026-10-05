@@ -1,4 +1,4 @@
-/* Wipelight: a minimal ZIP writer (stored, not compressed: WAV files barely shrink anyway), so several rendered files can be saved as one download.
+/* Glass Groove: a minimal ZIP writer (stored, not compressed: WAV files barely shrink anyway), so several rendered files can be saved as one download.
    Pure: bytes in, bytes out. Names are written as UTF-8. Files over 4 GB are not supported (and a render never gets near that). */
 const TABLE = (() => {
   const t = new Uint32Array(256);

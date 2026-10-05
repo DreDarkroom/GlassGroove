@@ -1,4 +1,4 @@
-/* Wipelight Takes: the video panel. Play a recorded take, mark a start and an end, save the kept part as a new take, grab a frame.
+/* Glass Groove Takes: the video panel. Play a recorded take, mark a start and an end, save the kept part as a new take, grab a frame.
    A browser cannot cut a video file without re-encoding it, so "save trimmed copy" plays the kept part and records it again, in real time. */
 import { $, clamp, fmtBytes, fmtTime, download } from '../util.js';
 import { library } from '../rec/library.js';

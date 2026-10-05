@@ -1,4 +1,4 @@
-/* What is new in Wipelight: the Studio's editing functions, presses in the recording format, version-1 files, and the picture's press folding. */
+/* What is new in Glass Groove: the Studio's editing functions, presses in the recording format, version-1 files, and the picture's press folding. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { C, validate, decode, encode, toDoc, createRecorder } from '../src/perf/format.js';
@@ -107,7 +107,7 @@ test('a press is a recorded event with its position, control and force, and bad 
   r.log(10.8, C.press, 0.1, 0.2, -3, 1);                              // a negative control id: dropped
   const doc = r.stop(12);
   assert.equal(doc.version, 2);
-  assert.equal(doc.app, 'Wipelight');
+  assert.equal(doc.app, 'GlassGroove');
   const back = await decode((await encode(doc)).bytes);
   assert.deepEqual(back.events.map((e) => [e.code, ...e.a]), [[C.press, 0.25, 0.75, 4000000000, 1.2]]);
 });

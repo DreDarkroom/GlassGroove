@@ -1,12 +1,12 @@
-/* Wipelight: the picture is the instrument. One set of gestures for finger, pen and mouse.
+/* Glass Groove: the picture is the instrument. One set of gestures for finger, pen and mouse.
    one finger  wipe the fog (it smears, squeaks, drips and opens the filter)    two fingers held  rise, let go to drop    three  rise under water
-   double-tap  hide or show the controls    pen  pressure sets the blade, the barrel button rises, a resting palm is ignored
+   double-tap  hide or show the controls    two fingers, tapped twice  a surge: a long rise that drops by itself    pen  pressure sets the blade, the barrel button rises, a resting palm is ignored
    mouse       drag to wipe, hold the right button to rise (the middle button: under water) */
 import { $, clamp, round } from '../util.js';
 
 export function buildSurface(app) {
   const { A, V, PB, P } = app, stage = $('#stage'), fingers = new Set();
-  let strokeId = null, prev = null, quiet = 0, penAt = -1e9, moved = 0, downAt = 0, lastTap = { t: -1e9, x: 0, y: 0 }, buildTimer = 0;
+  let twoAt = 0, lastTwo = -1e9, strokeId = null, prev = null, quiet = 0, penAt = -1e9, moved = 0, downAt = 0, lastTap = { t: -1e9, x: 0, y: 0 }, buildTimer = 0;
 
   document.addEventListener('contextmenu', (e) => { if (!e.target.closest('input, select, textarea')) e.preventDefault(); });   // right-click is an instrument here
 
@@ -29,7 +29,8 @@ export function buildSurface(app) {
       if (fingers.size >= 2) {                                                         // a second finger turns the gesture into a build
         endStroke();
         clearTimeout(buildTimer);
-        buildTimer = setTimeout(() => app.startBuild(fingers.size >= 3 ? 1 : 0, 'touch'), 110);   // wait a beat in case a third finger follows
+        if (fingers.size === 2) twoAt = now;
+        buildTimer = setTimeout(() => app.startBuild(fingers.size >= 3 ? 1 : 0, 'touch'), 230);   // wait a little: a third finger may follow, or this is a quick two-finger tap
         return;
       }
     }
@@ -61,7 +62,15 @@ export function buildSurface(app) {
 
   const release = (e) => {
     if (e.button === 2 || e.button === 1) { app.endBuild('touch'); return; }
-    if (e.pointerType === 'touch' && fingers.delete(e.pointerId) && fingers.size < 2) { clearTimeout(buildTimer); app.endBuild('touch'); }
+    if (e.pointerType === 'touch' && fingers.delete(e.pointerId) && fingers.size < 2) {
+      const quick = e.type === 'pointerup' && fingers.size === 1 && twoAt && performance.now() - twoAt < 260;      // both fingers on and off again: a two-finger tap, not a hold
+      if (quick) {
+        const t = performance.now();
+        if (t - lastTwo < 450) { lastTwo = -1e9; app.surge.start(); } else lastTwo = t;
+        twoAt = 0;
+      }
+      clearTimeout(buildTimer); app.endBuild('touch');
+    }
     if (e.pointerId !== strokeId) return;
     const tap = moved < 10 && performance.now() - downAt < 280 && e.pointerType !== 'mouse' && e.type === 'pointerup';
     endStroke();

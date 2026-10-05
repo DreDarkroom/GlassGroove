@@ -1,4 +1,4 @@
-/* Wipelight: two tiny channels that replace the original's shared global array.
+/* Glass Groove: two tiny channels that replace the original's shared global array.
 
    `timed`: things that happen at an audio-clock time (a kick, a step, a drop). The sequencer pushes them when it schedules a sound,
    and the picture releases them when they are HEARD, so lights and sounds stay together. A moving head index means draining is O(1) per event

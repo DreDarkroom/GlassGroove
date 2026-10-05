@@ -1,4 +1,4 @@
-/* Wipelight: the dock and its sheets. Five tabs along the bottom (thumb height); one sheet slides up above them. Tap the tab again to put it away. */
+/* Glass Groove: the dock and its sheets. Five tabs along the bottom (thumb height); one sheet slides up above them. Tap the tab again to put it away. */
 import { $, $$, icon } from '../util.js';
 
 const TABS = ['play', 'beat', 'sound', 'look', 'keep'];
@@ -16,8 +16,10 @@ export function buildSheets(app) {
 
   function open(name) {
     if (!TABS.includes(name)) return;
+    const fresh = current == null;
     current = name;
     sheet.hidden = false;
+    if (fresh) app.nav.push('sheet', close);
     for (const t of TABS) $(`#pane-${t}`).hidden = t !== name;
     for (const b of $$('button', dock)) b.setAttribute('aria-selected', String(b.dataset.tab === name));
     if (refresh[name]) refresh[name]();
@@ -27,6 +29,7 @@ export function buildSheets(app) {
 
   function close() {
     current = null;
+    app.nav.release('sheet');
     sheet.hidden = true;
     for (const b of $$('button', dock)) b.setAttribute('aria-selected', 'false');
     setHeight();

@@ -1,4 +1,4 @@
-/* Wipelight: the Beat tab. Pick a part (kick, snare, hats, bass), then shape it with big, plain-worded controls.
+/* Glass Groove: the Beat tab. Pick a part (kick, snare, hats, bass), then shape it with big, plain-worded controls.
    The three drummers are rings of dots that loop at different lengths (so the groove takes a long time to repeat): tap a dot to turn a hit on or off.
    The bass is a small grid, eight steps at a time. Pro view (Settings) shows all sixteen at once. */
 import { $, h, clamp } from '../util.js';

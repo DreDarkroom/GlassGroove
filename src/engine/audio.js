@@ -1,4 +1,4 @@
-/* Wipelight: the audio engine.
+/* Glass Groove: the audio engine.
    One mono analogue-style bass voice (2 saws + square sub -> drive -> 24dB ladder-ish filter, ducked by the kick), drum kits, builds and drops
    (master filters, riser, gap, impact), and a tray (echo + room) everything can be dipped in.
 
@@ -404,7 +404,7 @@ export function createAudio(opts = {}) {
    * The riser that goes with a build. variant 0 "lift": noise climbing while the mix thins out (high-pass rising).
    * variant 1 "sink": the mix goes under water (low-pass falling toward nothing) while a low rumble swells. on=false at time t stops it.
    */
-  A.riser = (on, variant, t) => {
+  A.riser = (on, variant, t, len = 8) => {
     if (!ctx) return;
     if (t == null) t = ctx.currentTime;
     hook(t, 14, on ? 1 : 0, variant ? 1 : 0);
@@ -414,20 +414,20 @@ export function createAudio(opts = {}) {
       src.buffer = noiseBuf; src.loop = true;
       bp.type = 'bandpass'; bp.Q.value = variant ? 1.2 : 4;
       if (variant) {
-        bp.frequency.setValueAtTime(2400, t); bp.frequency.exponentialRampToValueAtTime(260, t + 8);
-        g.gain.setValueAtTime(0.001, t); g.gain.linearRampToValueAtTime(0.14, t + 6);
-        sweepImpl('lp', 160, t, 7);
+        bp.frequency.setValueAtTime(2400, t); bp.frequency.exponentialRampToValueAtTime(260, t + len);
+        g.gain.setValueAtTime(0.001, t); g.gain.linearRampToValueAtTime(0.14, t + len - 2);
+        sweepImpl('lp', 160, t, len - 1);
         rumble = mk('createOscillator'); rumbleGain = G();                // a low swell underneath: the pressure before a drop
         rumble.type = 'sine';
-        rumble.frequency.setValueAtTime(38, t); rumble.frequency.linearRampToValueAtTime(52, t + 8);
-        rumbleGain.gain.setValueAtTime(0.0001, t); rumbleGain.gain.linearRampToValueAtTime(0.3, t + 7);
+        rumble.frequency.setValueAtTime(38, t); rumble.frequency.linearRampToValueAtTime(52, t + len);
+        rumbleGain.gain.setValueAtTime(0.0001, t); rumbleGain.gain.linearRampToValueAtTime(0.3, t + len - 1);
         rumble.connect(rumbleGain);
         route(rumbleGain, 0);
         rumble.start(t);
       } else {
-        bp.frequency.setValueAtTime(300, t); bp.frequency.exponentialRampToValueAtTime(8000, t + 8);
-        g.gain.setValueAtTime(0.001, t); g.gain.linearRampToValueAtTime(0.18, t + 7);
-        sweepImpl('hp', 1100, t, 9);
+        bp.frequency.setValueAtTime(300, t); bp.frequency.exponentialRampToValueAtTime(8000, t + len);
+        g.gain.setValueAtTime(0.001, t); g.gain.linearRampToValueAtTime(0.18, t + len - 1);
+        sweepImpl('hp', 1100, t, len + 1);
       }
       src.connect(bp); bp.connect(g);
       route(g, 0.4);

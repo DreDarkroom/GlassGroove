@@ -1,4 +1,4 @@
-/* Wipelight: small helpers shared by everything. No DOM at import time, so Node tests can load it. */
+/* Glass Groove: small helpers shared by everything. No DOM at import time, so Node tests can load it. */
 export const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 export const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
 export const dbToGain = (d) => Math.pow(10, d / 20);

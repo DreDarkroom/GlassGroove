@@ -1,4 +1,4 @@
-/* Wipelight: the page. Makes the engines, builds the interface, and joins them. */
+/* Glass Groove: the page. Makes the engines, builds the interface, and joins them. */
 import { $, store } from './util.js';
 import { createAudio } from './engine/audio.js';
 import { createSeq } from './engine/seq.js';
@@ -22,6 +22,9 @@ import { buildKeep } from './ui/keep.js';
 import { buildSettings } from './ui/settings.js';
 import { buildExtras, isTouchDevice } from './ui/extras.js';
 import { buildDev } from './dev/devtools.js';
+import { buildNav } from './ui/nav.js';
+import { buildSurge } from './ui/surge.js';
+import { buildFeedback } from './ui/feedback.js';
 
 export function start() {
   const qs = new URLSearchParams(location.search);
@@ -35,8 +38,8 @@ export function start() {
   V.init($('#stage'));
 
   buildExtras(app);                                                                   // first: the other tabs read the bloom, battery and haptics it sets up
-  buildSheets(app); buildPerform(app); buildSurface(app); buildPlay(app); buildBeat(app); buildSound(app); buildLook(app); buildKeep(app);
-  buildSettings(app); buildDev(app);
+  buildSheets(app); buildPerform(app); buildNav(app); buildSurge(app); buildSurface(app); buildPlay(app); buildBeat(app); buildSound(app); buildLook(app); buildKeep(app);
+  buildFeedback(app); buildSettings(app); buildDev(app);
   app.isEco = app.isEco || (() => false);
 
   /* after a new beat, a vibe or a file: bring every control in line with the model */

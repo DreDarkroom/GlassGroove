@@ -1,4 +1,4 @@
-/* Wipelight: developer mode. Switch it on in the settings (or Shift + D, or ?dev=1).
+/* Glass Groove: developer mode. Switch it on in the settings (or Shift + D, or ?dev=1).
    Live numbers (frame time by section, audio nodes and sounds a second, how far ahead of the audio clock the scheduler is, memory), switches that turn one
    costly part off at a time so you can see what it costs, a benchmark that measures the picture and the sound with the browser's own clocks, and a log.
    It is how the speed-ups in this version were found and checked. It costs nothing while it is off. */
@@ -83,8 +83,11 @@ export function buildDev(app) {
     let report = null;
     bench.addEventListener('click', async () => {
       bench.disabled = true;
-      out.textContent = 'Running…';
+      const wasPlaying = S.playing;
+      if (wasPlaying) app.togglePlay();                        // the benchmark keeps the page busy for seconds: pause the music instead of letting it stutter
+      out.textContent = 'Running (the music is paused meanwhile)…';
       try { report = await runBench(out); } catch (err) { out.textContent = `Benchmark problem: ${err.message}`; }
+      if (wasPlaying && !S.playing) app.togglePlay();
       bench.disabled = false;
     });
     copy.addEventListener('click', async () => {
@@ -135,8 +138,10 @@ export function buildDev(app) {
   }
 
   function toggle(force, persist = true) {
+    const was = on;
     on = force != null ? force : !on;
     box.hidden = !on;
+    if (on && !was && persist) { if (app.settingsOpen && app.settingsOpen()) app.toggleSettings(false); app.nav.push('dev', () => toggle(false)); } else if (!on && was) app.nav.release('dev');
     document.body.classList.toggle('dev', on);
     if (persist) app.store.set('dev', on);
     clearInterval(timer);

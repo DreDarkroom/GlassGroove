@@ -1,4 +1,4 @@
-/* Wipelight Takes: render a performance to a WAV file, faster than real time, with no sound played and nothing recorded.
+/* Glass Groove Takes: render a performance to a WAV file, faster than real time, with no sound played and nothing recorded.
    The performance is re-played into an OfflineAudioContext through the same engine the instrument uses (at its best quality: 4x oversampling, the full room).
    Every sound and every knob move is scheduled at its exact time; the one setting the browser cannot automate (the bass drive curve) is changed at pauses. */
 import { createAudio } from '../engine/audio.js';

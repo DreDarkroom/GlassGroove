@@ -1,4 +1,4 @@
-/* Wipelight: the Sound tab. A vibe is a whole starting point; the mood sets the notes and the colour; four big sliders do most of what you want,
+/* Glass Groove: the Sound tab. A vibe is a whole starting point; the mood sets the notes and the colour; four big sliders do most of what you want,
    and "More sound" holds the rest. Everything is named for what you hear, not for what the synth calls it. */
 import { $, h, clamp } from '../util.js';
 import { paintRange, toast } from './dom.js';
@@ -77,7 +77,7 @@ export function buildSound(app) {
     h('h3', { text: 'Vibe' }), h('div', { class: 'vibes', role: 'listbox', 'aria-label': 'Vibe' }, vibeBtns),
     h('h3', { text: 'Mood' }), h('div', { class: 'chips' }, moodBtns),
     h('h3', { text: 'Speed' }), tempo,
-    h('h3', { text: 'Tweak' }), SLIDERS.map(slider), moreBtn, more,
+    h('h3', { text: 'Tweak' }), ...SLIDERS.map(slider), moreBtn, more,
     h('h3', { text: 'When the drop lands' }), drops,
   );
   const sync = () => { syncs.forEach((f) => f()); paintTempo(); paintVibe(); setLight(S.light); };
