@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Wipe the fog off a glowing picture and make music with your thumbs.",
   "scripts": {
-    "test": "node tools/check-modules.mjs && node --test tests/logic.test.js tests/music.test.js tests/takes.test.js tests/share.test.js tests/surge.test.js",
+    "test": "node tools/check-modules.mjs && node --test tests/logic.test.js tests/music.test.js tests/takes.test.js tests/share.test.js tests/surge.test.js tests/stack.test.js",
     "sw": "node tools/build-sw.js",
     "serve": "python -m http.server 5173"
   }

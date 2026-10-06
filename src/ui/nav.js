@@ -12,40 +12,29 @@ import { timed } from '../events.js';
 import { makeClock } from '../engine/clock.js';
 import { saveLoop } from '../engine/loopfile.js';
 import { toast, modal } from './dom.js';
+import { createStack } from './stack.js';
 
 export function buildNav(app) {
   const { A, S, R, PB } = app;
   const nav = {};
 
   /* ================= the Back button ================= */
-  const stack = [];                                            // open layers, innermost last: { name, close, d }
-  let skip = 0, asking = false, leaving = false;
-  const depth = () => (history.state && history.state.d) || 0;
+  const stack = createStack();
+  let asking = false, leaving = false;
+  
+  const depth = () => stack.depth(history.state);
+  const histSupport = () => { try { history.pushState({ gg: 'app', d: depth() + 1 }, ''); return true; } catch (err) { return false; } };
   try { history.replaceState({ gg: 'root', d: 0 }, ''); history.pushState({ gg: 'app', d: 1 }, ''); } catch (err) { /* no history API (a sandboxed frame): Back simply leaves */ }
 
   /** Register something that is now open; Back will close it (by calling `close`). */
-  nav.push = (name, close) => {
-    if (stack.some((l) => l.name === name)) return;
-    let hist = true;
-    try { history.pushState({ gg: 'app', d: depth() + 1 }, ''); } catch (err) { hist = false; }    // if the browser refuses, the layer works but Back will not close it
-    stack.push({ name, close, d: hist ? depth() : Infinity, hist });
-  };
+  nav.push = (name, close) => stack.push(name, close, histSupport, depth);
+  
   /** It was closed some other way (a button): take it off the stack and its history step with it, if it was the innermost. */
-  nav.release = (name) => {
-    const i = stack.findIndex((l) => l.name === name);
-    if (i < 0) return;
-    const [l] = stack.splice(i, 1);
-    if (l.hist && i === stack.length && depth() === l.d) { skip++; try { history.back(); } catch (err) { skip--; } }
-  };
-  nav.open = (name) => stack.some((l) => l.name === name);
+  nav.release = (name) => stack.release(name, depth, () => { try { history.back(); return true; } catch (err) { return false; } });
+  
+  nav.open = stack.open;
 
-  addEventListener('popstate', () => {
-    if (skip > 0) { skip--; return; }
-    const s = history.state || {};
-    if (s.gg === 'root') return askLeave();
-    const d = s.d || 1;
-    while (stack.length && stack[stack.length - 1].hist && stack[stack.length - 1].d > d) stack.pop().close();
-  });
+  addEventListener('popstate', () => stack.popstate(history.state, askLeave));
 
   function askLeave() {
     if (leaving || asking) return;
